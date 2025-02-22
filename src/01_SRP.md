@@ -17,7 +17,7 @@ The **Single Responsibility Principle (SRP)** is the first of the SOLID principl
 
 This means that a module should focus on a single functionality, making the code easier to maintain and extend.  
 
-## A Bad Example: Violating SRP
+## A Bad Example: Report Data Strcture
 
 Let's consider a `Report` struct that handles both data and file operations:  
 
