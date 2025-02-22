@@ -1,0 +1,16 @@
+[book]
+authors = ["Daniele Olmisani"]
+language = "en"
+multilingual = false
+src = "src"
+title = "SOLID Principles in Rust"
+
+[preprocessor]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output]
+
+[output.html]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
