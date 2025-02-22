@@ -230,3 +230,137 @@ By using **trait objects** or **enums**, we can design our code to be **open for
 - Use **enums** for performance and compile-time safety.  
 
 Would you like an even more advanced example, perhaps with **functional-style composition** or **strategy patterns**? 🚀
+
+
+Let's take the **Open/Closed Principle (OCP)** a step further using **functional-style composition** and the **Strategy Pattern** in Rust. These techniques allow us to extend behavior dynamically while keeping existing code unchanged.  
+
+---
+
+## **🚀 Advanced OCP in Rust: Strategy Pattern & Functional Composition**  
+
+Instead of using **inheritance** (common in OOP languages like Java), Rust encourages **composition** via **traits and function pointers (closures)**. This makes our code more flexible and truly **open for extension but closed for modification**.  
+
+---
+
+## **1. Strategy Pattern in Rust (Using Traits & Box<dyn Fn()>)**
+
+The **Strategy Pattern** allows us to define a family of algorithms (or behaviors) and select them dynamically at runtime.  
+
+### **Example: Dynamic Rendering Strategies**
+```rust
+use std::rc::Rc;
+
+trait RenderStrategy {
+    fn render(&self);
+}
+
+// Concrete strategies
+struct ConsoleRenderer;
+impl RenderStrategy for ConsoleRenderer {
+    fn render(&self) {
+        println!("Rendering to console");
+    }
+}
+
+struct WebRenderer;
+impl RenderStrategy for WebRenderer {
+    fn render(&self) {
+        println!("Rendering to web canvas");
+    }
+}
+
+// Context that delegates rendering
+struct Shape {
+    name: String,
+    render_strategy: Rc<dyn RenderStrategy>,
+}
+
+impl Shape {
+    fn new(name: &str, render_strategy: Rc<dyn RenderStrategy>) -> Self {
+        Self {
+            name: name.to_string(),
+            render_strategy,
+        }
+    }
+
+    fn render(&self) {
+        print!("Rendering shape: {} -> ", self.name);
+        self.render_strategy.render();
+    }
+}
+
+fn main() {
+    let console_renderer = Rc::new(ConsoleRenderer);
+    let web_renderer = Rc::new(WebRenderer);
+
+    let circle = Shape::new("Circle", console_renderer.clone());
+    let square = Shape::new("Square", web_renderer.clone());
+
+    circle.render(); // Renders to console
+    square.render(); // Renders to web canvas
+}
+```
+
+### **Why This Works?**
+✅ **Open for Extension** – We can add new rendering strategies (`FileRenderer`, `OpenGLRenderer`, etc.) **without modifying `Shape`**.  
+✅ **Closed for Modification** – The existing rendering logic remains **untouched**.  
+
+---
+
+## **2. Functional Composition with Closures (`Box<dyn Fn()>`)**
+For even greater flexibility, we can use **closures** as dynamic strategies instead of traits.  
+
+### **Example: Dynamic Behavior with Closures**
+```rust
+struct Shape {
+    name: String,
+    render_fn: Box<dyn Fn()>,
+}
+
+impl Shape {
+    fn new(name: &str, render_fn: impl Fn() + 'static) -> Self {
+        Self {
+            name: name.to_string(),
+            render_fn: Box::new(render_fn),
+        }
+    }
+
+    fn render(&self) {
+        print!("Rendering shape: {} -> ", self.name);
+        (self.render_fn)();
+    }
+}
+
+fn main() {
+    let console_renderer = || println!("Rendering to console");
+    let web_renderer = || println!("Rendering to web canvas");
+
+    let circle = Shape::new("Circle", console_renderer);
+    let square = Shape::new("Square", web_renderer);
+
+    circle.render();
+    square.render();
+}
+```
+
+### **Why This Works?**
+✅ **No Trait Boilerplate** – Just pass any function or closure as a strategy.  
+✅ **Extremely Flexible** – Allows on-the-fly customization without defining new structs.  
+✅ **Minimal Overhead** – Uses Rust’s powerful **first-class functions** for dynamic behavior.  
+
+---
+
+## **🚀 Summary: OCP in Rust**
+| Approach | Pros | Cons |
+|----------|------|------|
+| **Trait Objects (`dyn Trait`)** | Stronger type safety, extensible | Some overhead due to dynamic dispatch |
+| **Enum-Based Strategy** | Faster, avoids dynamic dispatch | Requires modifying enum for new strategies |
+| **Functional Composition (`Box<dyn Fn()>`)** | Extremely flexible, no trait boilerplate | Harder to document & enforce contracts |
+
+---
+## **🎯 When to Use What?**
+- Use **traits (`dyn Trait`)** if your behaviors have a clear structure & should be **reusable**.  
+- Use **closures (`Box<dyn Fn()>`)** if you need **lightweight, ad-hoc strategy selection**.  
+- Use **enums** if the set of behaviors is **known & limited** at compile-time.  
+
+Would you like a real-world example, such as a **pluggable rendering engine** or a **middleware system**? 🚀
