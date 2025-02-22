@@ -29,11 +29,11 @@ impl Renderer {
 }
 ```
 
-This implementation **violates OCP** because every time we introduce a new shape (e.g., a Triangle), we must **modify** the `Renderer`'s `render` method.  
+This implementation **violates OCP** because every time we introduce a new shape (e.g. a Triangle), we must **modify** the `Renderer`'s `render` method.  
 
 ## A Better Example: Applying OCP
 
-A better approach is to use **traits** to define a contract for rendering:  
+A better approach is to use **traits** to define a contract for rendering and 
 
 ```rust
 trait Shape {
